@@ -45,8 +45,10 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # 如果有 build，改成您的輸出資料夾（如 dist 或 build）。若是純 HTML 專案，保持 '.' 即可
-          path: '.' 
+          # npm run build（vite build）の出力先は dist/ なので、そのフォルダをアップロードする。
+          # ルート（'.'）のままだと未ビルドのソース（/src/main.tsx 参照のindex.html等）が
+          # そのまま公開されてしまい、Pages上で真っ白/読み込みエラーになる。
+          path: './dist'
 
       - name: Deploy to GitHub Pages
         id: deployment
