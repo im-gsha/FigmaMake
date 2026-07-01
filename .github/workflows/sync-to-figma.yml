@@ -36,11 +36,18 @@ jobs:
       - name: Update Figma Make Content
         env:
           FIGMA_TOKEN: ${{ secrets.FIGMA_ACCESS_TOKEN }}
-          FILE_KEY: "HBvkEmZqQEvVIREB6OT8M3" # 您的 Make 檔案 ID
+          FILE_KEY: "pWSBzud1e8GXH9fhN0bc62" # 您的 Make 檔案 ID
         run: |
-          echo "正在透過開發資源 API 將最新代碼同步至 Figma Make..."
+          echo "正在從全新的 Design File 中抓取畫面結構..."
           
-          # 改用 dev_resources API，將您的前端代碼連結、排班狀態直接掛載到該畫布上
+          # 1. 先透過 API 自動抓取您全新檔案的第一個畫布節點 ID (Node ID)
+          FIRST_NODE_ID=$(curl -s -X GET "https://api.figma.com/v1/files/$FILE_KEY" \
+            -H "X-Figma-Token: $FIGMA_TOKEN" | jq -r '.document.children[0].id' || echo "0:1")
+          
+          echo "成功抓取到目標節點 ID: $FIRST_NODE_ID"
+          echo "正在將最新代碼與排班狀態推送到 Figma..."
+          
+          # 2. 將連結與前端代碼 commit 狀態正式掛載上去
           curl -X POST "https://api.figma.com/v1/files/$FILE_KEY/dev_resources" \
             -H "X-Figma-Token: $FIGMA_TOKEN" \
             -H "Content-Type: application/json" \
@@ -50,7 +57,7 @@ jobs:
                   "name": "GitHub 最新前端程式碼與排班狀態",
                   "url": "https://github.com/${{ github.repository }}/commit/${{ github.sha }}",
                   "file_key": "'$FILE_KEY'",
-                  "node_id": "0:1"
+                  "node_id": "'$FIRST_NODE_ID'"
                 }
               ]
             }'
