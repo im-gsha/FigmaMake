@@ -38,11 +38,19 @@ jobs:
           FIGMA_TOKEN: ${{ secrets.FIGMA_ACCESS_TOKEN }}
           FILE_KEY: "HBvkEmZqQEvVIREB6OT8M3" # 您的 Make 檔案 ID
         run: |
-          echo "正在將最新前端代碼/排班資料同步至 Figma Make..."
+          echo "正在透過開發資源 API 將最新代碼同步至 Figma Make..."
           
-          # 範例：利用 Figma API 更新該檔案的變數或文字內容
-          # （這會強制讓您的 Figma Make 畫面讀取到最新的變更）
-          curl -X POST "https://api.figma.com/v1/files/$FILE_KEY/variables" \
+          # 改用 dev_resources API，將您的前端代碼連結、排班狀態直接掛載到該畫布上
+          curl -X POST "https://api.figma.com/v1/files/$FILE_KEY/dev_resources" \
             -H "X-Figma-Token: $FIGMA_TOKEN" \
             -H "Content-Type: application/json" \
-            -d '{"status": "success", "message": "Code updated from GitHub"}'
+            -d '{
+              "dev_resources": [
+                {
+                  "name": "GitHub 最新前端程式碼與排班狀態",
+                  "url": "https://github.com/${{ github.repository }}/commit/${{ github.sha }}",
+                  "file_key": "'$FILE_KEY'",
+                  "node_id": "0:1"
+                }
+              ]
+            }'
