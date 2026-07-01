@@ -31,6 +31,5 @@ jobs:
       - name: Publish to Figma Connect
         env:
           FIGMA_ACCESS_TOKEN: ${{ secrets.FIGMA_ACCESS_TOKEN }}
-        run: |
-          # 執行 Figma Connect 的發布指令，它會自動讀取 figma.config.json
-          npx figma-connect publish
+          FIGMA_TOKEN: ${{ secrets.FIGMA_ACCESS_TOKEN }} # 雙重保險
+        run: npx @figma/code-connect publish  # ✨ 修正這裡，加上 @figma/ 和 code-connect
