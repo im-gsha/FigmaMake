@@ -20,7 +20,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22' # 或使用您的專案 Node 版本
+          node-version: '24' # 或使用您的專案 Node 版本
           cache: 'npm'
 
       # 3. 安裝前端依賴套件（包含您的 UI 元件與排班顯示邏輯）
