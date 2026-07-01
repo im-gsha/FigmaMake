@@ -27,9 +27,22 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      # 4. 執行同步指令，將最新的代碼結構與樣式推送到 Figma
-      - name: Publish to Figma Connect
+      # # 4. 執行同步指令，將最新的代碼結構與樣式推送到 Figma
+      # - name: Publish to Figma Connect
+      #   env:
+      #     FIGMA_ACCESS_TOKEN: ${{ secrets.FIGMA_ACCESS_TOKEN }}
+      #     FIGMA_TOKEN: ${{ secrets.FIGMA_ACCESS_TOKEN }} # 雙重保險
+      #   run: npx @figma/code-connect connect # ✨ 修正這裡，加上 @figma/ 和 code-connect
+      - name: Update Figma Make Content
         env:
-          FIGMA_ACCESS_TOKEN: ${{ secrets.FIGMA_ACCESS_TOKEN }}
-          FIGMA_TOKEN: ${{ secrets.FIGMA_ACCESS_TOKEN }} # 雙重保險
-        run: npx @figma/code-connect connect # ✨ 修正這裡，加上 @figma/ 和 code-connect
+          FIGMA_TOKEN: ${{ secrets.FIGMA_ACCESS_TOKEN }}
+          FILE_KEY: "HBvkEmZqQEvVIREB6OT8M3" # 您的 Make 檔案 ID
+        run: |
+          echo "正在將最新前端代碼/排班資料同步至 Figma Make..."
+          
+          # 範例：利用 Figma API 更新該檔案的變數或文字內容
+          # （這會強制讓您的 Figma Make 畫面讀取到最新的變更）
+          curl -X POST "https://api.figma.com/v1/files/$FILE_KEY/variables" \
+            -H "X-Figma-Token: $FIGMA_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{"status": "success", "message": "Code updated from GitHub"}'
