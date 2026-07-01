@@ -1,0 +1,36 @@
+name: Push to Update Figma
+
+on:
+  push:
+    branches:
+      - main
+  # 保留手動觸發按鈕，方便您測試
+  workflow_dispatch:
+
+jobs:
+  sync-code-to-figma:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 複製 GitHub 上的最新前端原始碼
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. 設定 Node.js 環境
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22' # 或使用您的專案 Node 版本
+          cache: 'npm'
+
+      # 3. 安裝前端依賴套件（包含您的 UI 元件與排班顯示邏輯）
+      - name: Install Dependencies
+        run: npm ci
+
+      # 4. 執行同步指令，將最新的代碼結構與樣式推送到 Figma
+      - name: Publish to Figma Connect
+        env:
+          FIGMA_ACCESS_TOKEN: ${{ secrets.FIGMA_ACCESS_TOKEN }}
+        run: |
+          # 執行 Figma Connect 的發布指令，它會自動讀取 figma.config.json
+          npx figma-connect publish
